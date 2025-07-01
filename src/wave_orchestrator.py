@@ -27,7 +27,7 @@ class WaveOrchestrator:
         def answering_node(state: any):
             results = state.task_results
             system_prompt = f"""
-    You are an expert of answering user questions based on the results of the research that was done by the workers.
+    You are an expert at answering user questions based on the results of the research that was done by the workers.
     here are the user questions and the results of the tasks:
     user_question: {state.messages[-1].content}
     task_results: {json.dumps(results)}

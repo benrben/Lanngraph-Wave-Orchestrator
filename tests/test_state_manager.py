@@ -43,6 +43,23 @@ def test_prepare_command_output_subsequent_wave():
     assert out["current_wave"] == 2
     assert out["task_results"] == {"t1": "task"}
 
+
+def test_prepare_command_output_with_human_message_placeholder():
+    wm = WorkerManager()
+    node = WorkerNode(function=dummy_func, model=None, state_placeholder="s1", description="d", name="n1")
+    wm.add_node(node)
+    sm = StateManager(wm)
+    exec_waves = ExecutionWaves(waves={0: [TaskPlan(task_id="1", task="t1", node_allocated="n1")]})
+    state = type("S", (), {
+        "current_wave": 1,
+        "task_results": {},
+        "execution_waves": exec_waves,
+        "s1": HumanMessage(content="result"),
+    })()
+    out = sm.prepare_command_output(state)
+    assert out["current_wave"] == 2
+    assert out["task_results"] == {"t1": "result"}
+
 def test_create_dynamic_state():
     wm, node = setup_manager()
     sm = StateManager(wm)

@@ -12,7 +12,7 @@ A parallel task execution framework built on LangGraph that distributes AI-power
 ## Installation
 
 ```bash
-pip install langgraph langchain-openai pydantic
+pip install langgraph langchain-core pydantic
 ```
 
 ## Usage
