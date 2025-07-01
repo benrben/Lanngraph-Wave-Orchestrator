@@ -1,4 +1,4 @@
-from src import WaveOrchestrator
+from langgraph_wave_orchestrator import WaveOrchestrator
 from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 

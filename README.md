@@ -49,7 +49,7 @@ pip install langchain-openai
 ## Usage
 
 ```python
-from src import WaveOrchestrator, WorkerNode
+from langgraph_wave_orchestrator import WaveOrchestrator, WorkerNode
 from langchain_openai import ChatOpenAI
 
 # Create LLM and orchestrator
