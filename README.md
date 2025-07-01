@@ -11,8 +11,39 @@ A parallel task execution framework built on LangGraph that distributes AI-power
 
 ## Installation
 
+### Install from PyPI
+
 ```bash
-pip install langgraph langchain-openai pydantic
+pip install Lanngraph-Wave-Orchestrator
+```
+
+### Install from TestPyPI (for testing)
+
+```bash
+pip install -i https://test.pypi.org/simple/ Lanngraph-Wave-Orchestrator
+```
+
+### Install from Source
+
+```bash
+git clone https://github.com/benrben/Lanngraph-Wave-Orchestrator.git
+cd Lanngraph-Wave-Orchestrator
+pip install -e .
+```
+
+### Dependencies
+
+The package automatically installs these dependencies:
+- `pydantic>=2.0.0` - For data validation and settings management
+- `langchain-core>=0.1.0` - Core LangChain functionality
+- `langgraph>=0.1.0` - Graph-based LLM application framework
+- `python-dotenv>=1.0.0` - Environment variable management
+
+### Optional Dependencies
+
+For OpenAI integration (recommended):
+```bash
+pip install langchain-openai
 ```
 
 ## Usage
