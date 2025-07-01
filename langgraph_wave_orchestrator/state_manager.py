@@ -1,5 +1,5 @@
 from pydantic import create_model
-from src.models import ParallelStarState
+from .models import ParallelStarState
 from .worker_manager import WorkerManager
 
 
