@@ -17,7 +17,10 @@ class TaskResult(BaseModel):
 
 
 class ExecutionWaves(BaseModel):
-    waves: Dict[int, List[TaskPlan]] = Field(description="Dictionary mapping wave number to list of tasks in that wave", default={})
+    waves: Dict[int, List[TaskPlan]] = Field(
+        description="Dictionary mapping wave number to list of tasks in that wave",
+        default_factory=dict,
+    )
     
 class ParallelTasksPlans(BaseModel):
     task_plans: List[TaskPlan] = Field(description="The task plans with dependencies")
@@ -29,7 +32,7 @@ class WorkerTaskState(BaseModel):
     task_id: str
     task: str
     node_allocated: str
-    messages: Annotated[List[BaseMessage], add_messages] = []
+    messages: Annotated[List[BaseMessage], add_messages] = Field(default_factory=list)
 
 class WorkerNode(BaseModel):
     function: Callable = Field(description="The function to execute")
@@ -40,9 +43,17 @@ class WorkerNode(BaseModel):
 
 
 class ParallelStarState(BaseModel):
-    messages: Annotated[List[BaseMessage], add_messages] = []
-    task_plans: ParallelTasksPlans = Field(description="The task plans", default=ParallelTasksPlans(task_plans=[]))
-    task_results: Dict[str, str] = Field(description="Results indexed by task_id", default={})
+    messages: Annotated[List[BaseMessage], add_messages] = Field(default_factory=list)
+    task_plans: ParallelTasksPlans = Field(
+        description="The task plans", default_factory=lambda: ParallelTasksPlans(task_plans=[])
+    )
+    task_results: Dict[str, str] = Field(
+        description="Results indexed by task_id", default_factory=dict
+    )
     current_wave: int = Field(description="Current execution wave", default=0)
-    active_tasks: Set[str] = Field(description="Currently running task IDs", default=set())
-    execution_waves: ExecutionWaves = Field(description="Execution waves", default=ExecutionWaves())
+    active_tasks: Set[str] = Field(
+        description="Currently running task IDs", default_factory=set
+    )
+    execution_waves: ExecutionWaves = Field(
+        description="Execution waves", default_factory=ExecutionWaves
+    )
