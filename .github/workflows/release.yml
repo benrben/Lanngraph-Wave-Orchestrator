@@ -22,7 +22,7 @@ jobs:
       - name: Build package
         run: |
           python -m pip install --upgrade build hatchling
-          rm -rf dist/
+          rm -rf dist/ build/ *.egg-info/
           python -m build
 
       # --- First stop: TestPyPI ---
