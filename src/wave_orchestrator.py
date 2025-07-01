@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Literal
 
-from .models import StarNode, TaskPlan, ParallelTasksPlans
+from .models import WorkerNode, TaskPlan, ParallelTasksPlans
 from typing import List, Literal
 from pydantic import BaseModel, Field
 from langgraph.graph import START, StateGraph
@@ -20,7 +20,7 @@ class WaveOrchestrator:
         self.state_manager = StateManager(self.worker_manager)
         self.wave_manager = WaveManager(self.worker_manager)
     
-    def add_node(self, node: StarNode):
+    def add_node(self, node: WorkerNode):
         self.worker_manager.add_node(node)
     
     def create_answering_node(self):

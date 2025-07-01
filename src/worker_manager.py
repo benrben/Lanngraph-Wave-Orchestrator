@@ -1,5 +1,5 @@
 from typing import List, Dict, Optional
-from .models import StarNode, TaskPlan
+from .models import WorkerNode, TaskPlan
 
 
 class WorkerManager:
@@ -8,7 +8,7 @@ class WorkerManager:
         self.worker_descriptions = {}
         self.workers_nodes = {}
     
-    def add_node(self, node: StarNode):
+    def add_node(self, node: WorkerNode):
         self.workers_nodes[node.name] = node
         self.workers.append(node.name)
         self.worker_descriptions[node.name] = node.description

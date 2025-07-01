@@ -31,7 +31,7 @@ class WorkerTaskState(BaseModel):
     node_allocated: str
     messages: Annotated[List[BaseMessage], add_messages] = []
 
-class StarNode(BaseModel):
+class WorkerNode(BaseModel):
     function: Callable = Field(description="The function to execute")
     model: Optional[Type[BaseModel]] = Field(description="The model to use", default=None)
     state_placeholder: str = Field(description="The state placeholder")
