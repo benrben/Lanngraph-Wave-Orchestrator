@@ -44,10 +44,7 @@ class WaveOrchestrator:
     def create_sequential_progress_node(self):
         def sequential_progress(state: any) -> Command[Literal[*self.worker_manager.workers,"answering"]]:
             print(f"sequential_progress")
-            state.current_wave = 0
-            state.execution_waves.waves =  {}
-            state.task_plans = ParallelTasksPlans(task_plans=[])
-            print(f"current wave: {state.current_wave}")
+            
             update = self.state_manager.prepare_command_output(state)
             print(f"length of waves: {len(state.execution_waves.waves)} current wave: {state.current_wave}")
             if self.wave_manager.is_waves_complete(state):
