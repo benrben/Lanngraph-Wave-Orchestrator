@@ -87,7 +87,7 @@ class WaveOrchestrator:
             plans = ParallelTasksPlans(task_plans=response.task_plans)
             print(f"📋 Sequential plan: {len(response.task_plans)} tasks")
             execution_waves = self.wave_manager.create_execution_waves(response.task_plans)
-            
+            print(f"execution waves: {execution_waves}")    
             return Command(goto="progress", update={"task_plans": plans, "execution_waves": execution_waves})
         
         return sequential_plan_node
