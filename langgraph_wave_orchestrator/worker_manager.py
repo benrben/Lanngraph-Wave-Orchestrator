@@ -24,7 +24,14 @@ class WorkerManager:
         return dynamic_fields
     
     def get_tasks_per_nodes(self, task_plans: List[TaskPlan]) -> Dict[str, List[TaskPlan]]:
-        return {
+        result = {
             node: [task for task in task_plans if task.node_allocated == node]
             for node in self.workers
-        } 
+        }
+        
+        # Also check if there are tasks allocated to nodes not in our workers list
+        unmatched_allocations = set(task.node_allocated for task in task_plans) - set(self.workers)
+        if unmatched_allocations:
+            print(f"❌ ERROR: Tasks allocated to unknown workers: {unmatched_allocations}")
+        
+        return result 

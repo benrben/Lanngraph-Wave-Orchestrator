@@ -69,6 +69,7 @@ class WaveOrchestrator:
         def sequential_plan_node(state: any) -> Command[Literal["progress"]]:
             llm = self.llm
             worker_list = self.worker_manager.get_worker_list_description()
+            
             plan_prompt = create_planning_prompt(
                 worker_list=worker_list,
                 user_query=state.messages[-1].content,
@@ -83,7 +84,8 @@ class WaveOrchestrator:
             
             plans = ParallelTasksPlans(task_plans=response.task_plans)
             print(f"📋 Sequential plan: {len(response.task_plans)} tasks")
-            execution_waves = self.wave_manager.create_execution_waves(response.task_plans)           
+            execution_waves = self.wave_manager.create_execution_waves(response.task_plans)
+            
             return Command(goto="progress", update={"task_plans": plans, "execution_waves": execution_waves})
         
         return sequential_plan_node
