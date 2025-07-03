@@ -43,6 +43,7 @@ class WaveOrchestrator:
     
     def create_sequential_progress_node(self):
         def sequential_progress(state: any) -> Command[Literal[*self.worker_manager.workers,"answering"]]:
+            print(f"sequential_progress")
             state.current_wave = 0
             state.execution_waves.waves =  {}
             state.task_plans = ParallelTasksPlans(task_plans=[])
@@ -88,9 +89,16 @@ class WaveOrchestrator:
             
             plans = ParallelTasksPlans(task_plans=response.task_plans)
             print(f"📋 Sequential plan: {len(response.task_plans)} tasks")
+            print(f"response.task_plans: {response.task_plans}")
             execution_waves = self.wave_manager.create_execution_waves(response.task_plans)
             print(f"execution waves: {execution_waves}")    
-            return Command(goto="progress", update={"task_plans": plans, "execution_waves": execution_waves})
+            print(f"task plans: {plans}")
+            # Reset current_wave to 0 for new planning cycle
+            return Command(goto="progress", update={
+                "task_plans": plans, 
+                "execution_waves": execution_waves,
+                "current_wave": 0
+            })
         
         return sequential_plan_node
     

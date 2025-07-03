@@ -1,0 +1,9 @@
+{
+    "dependencies": ["."],
+    "graphs": {
+      "wave_orchestrator": {
+        "path": "./langgraph_wave_orchestrator/graph.py:graph"
+      }
+    },
+    "env": ".env"
+  } 
