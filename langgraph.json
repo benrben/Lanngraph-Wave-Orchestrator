@@ -1,0 +1,6 @@
+{
+    "dependencies": ["./"],
+    "graphs": {
+        "wave_orchestrator": "./main.py:graph"
+    }
+  }

@@ -1,8 +1,12 @@
-from typing import Annotated, List, Dict, Set, Optional, Type, Callable
+from typing import Annotated, List, Dict, Set, Optional, Type, Callable, Generic, TypeVar
 from pydantic import BaseModel, Field
 from langchain_core.messages import BaseMessage
 from langgraph.graph.message import add_messages
 from typing import Literal
+
+# Define generic type variables
+InputT = TypeVar('InputT')
+OutputT = TypeVar('OutputT')
 
 class TaskPlan(BaseModel):
     task_id: str = Field(description="Unique identifier for the task")
@@ -34,9 +38,8 @@ class WorkerTaskState(BaseModel):
     node_allocated: str
     messages: Annotated[List[BaseMessage], add_messages] = Field(default_factory=list)
 
-class WorkerNode(BaseModel):
-    function: Callable = Field(description="The function to execute")
-    model: Optional[Type[BaseModel]] = Field(description="The model to use", default=None)
+class WorkerNode(BaseModel, Generic[InputT, OutputT]):
+    function: Callable[[InputT], OutputT] = Field(description="The function to execute")
     state_placeholder: str = Field(description="The state placeholder")
     description: str = Field(description="The description")
     name: str = Field(description="The name")

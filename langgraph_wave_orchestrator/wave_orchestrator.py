@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Literal
+from typing import Literal, Dict, Any, Optional, Generic, TypeVar, Union, Type
 
 from .models import WorkerNode, TaskPlan, ParallelTasksPlans
 from typing import List, Literal
@@ -13,21 +13,28 @@ from .state_manager import StateManager
 from .prompts import create_answering_prompt, create_planning_prompt
 import json
 
+# Define generic type variables
+StateT = TypeVar('StateT')
+InputT = TypeVar('InputT')
+OutputT = TypeVar('OutputT')
 
-class WaveOrchestrator:
-    def __init__(self, llm: any, answering_prompt_override: str = None, planning_prompt_override: str = None):
+
+class WaveOrchestrator(Generic[StateT, InputT, OutputT]):
+    def __init__(self, llm: any, user_state_params: Optional[Union[Dict[str, Any], Type[BaseModel]]] = None, 
+                 answering_prompt_override: str = None, planning_prompt_override: str = None):
         self.llm = llm
-        self.worker_manager = WorkerManager()
-        self.state_manager = StateManager(self.worker_manager)
-        self.wave_manager = WaveManager(self.worker_manager)
+        self.worker_manager: WorkerManager[InputT, OutputT] = WorkerManager()
+        self.state_manager: StateManager[StateT] = StateManager(self.worker_manager, user_state_params)
+        self.wave_manager: WaveManager[InputT, OutputT] = WaveManager(self.worker_manager)
         self.answering_prompt_override = answering_prompt_override
         self.planning_prompt_override = planning_prompt_override
+        self.user_state_params = user_state_params
     
-    def add_node(self, node: WorkerNode):
+    def add_node(self, node: WorkerNode[InputT, OutputT]):
         self.worker_manager.add_node(node)
     
     def create_answering_node(self):
-        def answering_node(state: any):
+        def answering_node(state: StateT) -> Command[Literal["__end__"]]:
             results = state.task_results
             system_prompt = create_answering_prompt(
                 user_question=state.messages[-1].content,
@@ -42,7 +49,7 @@ class WaveOrchestrator:
         return answering_node
     
     def create_sequential_progress_node(self):
-        def sequential_progress(state: any) -> Command[Literal[*self.worker_manager.workers,"answering"]]:
+        def sequential_progress(state: StateT) -> Command[Literal[*self.worker_manager.workers,"answering"]]:
             print(f"sequential_progress")
             
             update = self.state_manager.prepare_command_output(state)
@@ -55,11 +62,9 @@ class WaveOrchestrator:
             for task in current_wave:
                 if task.node_allocated in self.worker_manager.workers_nodes:
                     node = self.worker_manager.workers_nodes[task.node_allocated]
-                    if node.model:
-                        model_instance = node.model(messages=[HumanMessage(content=str(task.task))])
-                        update[node.state_placeholder] = model_instance
-                    else:
-                        update[node.state_placeholder] = HumanMessage(content=str(task.task))
+                    # Create a new message list with the task content
+                    task_message = HumanMessage(content=str(task.task))
+                    update[node.state_placeholder] = [task_message]
                     goto.append(task.node_allocated)
             return Command(
                 goto=goto,
@@ -68,7 +73,7 @@ class WaveOrchestrator:
         return sequential_progress
     
     def create_sequential_plan_node(self):
-        def sequential_plan_node(state: any) -> Command[Literal["progress"]]:
+        def sequential_plan_node(state: StateT) -> Command[Literal["progress"]]:
             llm = self.llm
             worker_list = self.worker_manager.get_worker_list_description()
             
@@ -99,7 +104,7 @@ class WaveOrchestrator:
         
         return sequential_plan_node
     
-    def compile(self):
+    def compile(self) -> StateGraph[StateT]:
         DynamicParallelStarState = self.state_manager.create_dynamic_state()
         self.graph = StateGraph(DynamicParallelStarState)
         

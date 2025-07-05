@@ -1,10 +1,15 @@
-from typing import List
+from typing import List, Generic, TypeVar
 from .models import TaskPlan, ExecutionWaves
 from .worker_manager import WorkerManager
 
+# Define generic type variables
+InputT = TypeVar('InputT')
+OutputT = TypeVar('OutputT')
+StateT = TypeVar('StateT')
 
-class WaveManager:
-    def __init__(self, worker_manager: WorkerManager):
+
+class WaveManager(Generic[InputT, OutputT]):
+    def __init__(self, worker_manager: WorkerManager[InputT, OutputT]):
         self.worker_manager = worker_manager
     
     def create_execution_waves(self, task_plans: List[TaskPlan]) -> ExecutionWaves:
@@ -36,8 +41,8 @@ class WaveManager:
         print(f"execution_waves: {execution_waves}")
         return execution_waves
     
-    def is_waves_complete(self, state: any) -> bool:
+    def is_waves_complete(self, state: StateT) -> bool:
         return state.current_wave == len(state.execution_waves.waves)
     
-    def get_current_wave_tasks(self, state: any) -> List[TaskPlan]:
+    def get_current_wave_tasks(self, state: StateT) -> List[TaskPlan]:
         return state.execution_waves.waves[state.current_wave] 

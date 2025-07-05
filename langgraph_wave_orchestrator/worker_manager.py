@@ -1,27 +1,24 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Generic, TypeVar
 from .models import WorkerNode, TaskPlan
 
+# Define generic type variables
+InputT = TypeVar('InputT')
+OutputT = TypeVar('OutputT')
 
-class WorkerManager:
+
+class WorkerManager(Generic[InputT, OutputT]):
     def __init__(self):
         self.workers = []
         self.worker_descriptions = {}
-        self.workers_nodes = {}
+        self.workers_nodes: Dict[str, WorkerNode[InputT, OutputT]] = {}
     
-    def add_node(self, node: WorkerNode):
+    def add_node(self, node: WorkerNode[InputT, OutputT]):
         self.workers_nodes[node.name] = node
         self.workers.append(node.name)
         self.worker_descriptions[node.name] = node.description
     
     def get_worker_list_description(self) -> str:
         return ', '.join([f'**{worker}**: {self.worker_descriptions[worker]}' for worker in self.workers])
-    
-    def get_dynamic_fields(self) -> Dict[str, tuple]:
-        dynamic_fields = {}
-        for node_name in self.workers_nodes:
-            if self.workers_nodes[node_name].model:
-                dynamic_fields[self.workers_nodes[node_name].state_placeholder] = (Optional[self.workers_nodes[node_name].model], None)
-        return dynamic_fields
     
     def get_tasks_per_nodes(self, task_plans: List[TaskPlan]) -> Dict[str, List[TaskPlan]]:
         result = {
